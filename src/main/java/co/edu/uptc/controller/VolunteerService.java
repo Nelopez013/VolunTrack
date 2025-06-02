@@ -2,53 +2,58 @@ package co.edu.uptc.controller;
 
 import co.edu.uptc.model.*;
 import co.edu.uptc.persistence.JSONPersistence;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class VolunteerService {
+
     private List<Activity> activities;
-    private List<User> users;
+    private Map<String, List<User>> usersByRole;
+    private static VolunteerService instance;
     private JSONPersistence persistence;
 
     public VolunteerService() {
+
         persistence = new JSONPersistence();
         this.activities = persistence.loadActivities();
-        this.users = persistence.loadUsers();
+        this.usersByRole = persistence.loadUsersByRole();
 
-        // Ensure default admin exists
-        boolean adminExists = false;
-        for (User user : users) {
-            if (user.getUsername().equals("admin") && user.getRole().equals("admin")) {
-                adminExists = true;
-                break;
-            }
-        }
-        if (!adminExists) {
-            User admin = new User("admin", "admin123", "admin");
-            users.add(admin);
+        usersByRole.putIfAbsent("admins", new ArrayList<>());
+        usersByRole.putIfAbsent("volunteers", new ArrayList<>());
+
+        if (usersByRole.get("admins").stream().noneMatch(u -> u.getUsername().equals("admin"))) {
+            User admin = new User("Freddy","Alarcon","admin",34,"34@gmail.com", "admin123", "admin");
+            usersByRole.get("admins").add(admin);
             saveData();
             System.out.println("Default admin user created: username=admin, password=admin123");
         }
     }
 
+    
+    // Método estático para obtener la instancia única (singleton)
+    public static VolunteerService getInstance() {
+        if (instance == null) {
+            instance = new VolunteerService();
+        }
+        return instance;
+    }
+
     public void saveData() {
         persistence.saveActivities(activities);
-        persistence.saveUsers(users);
+        persistence.saveUsersByRole(usersByRole);
     }
 
     public void registerUser(User user) {
-        users.add(user);
+        String roleKey = user.getRole().equalsIgnoreCase("admin") ? "admins" : "volunteers";
+        usersByRole.get(roleKey).add(user);
         saveData();
     }
 
     public User authenticateUser(String username, String password) {
-        for (User user : users) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                return user;
-            }
-        }
-        return null;
+        return usersByRole.values().stream()
+                .flatMap(List::stream)
+                .filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Activity> getActivities() {
@@ -56,12 +61,10 @@ public class VolunteerService {
     }
 
     public Activity getActivityByName(String name) {
-        for (Activity a : activities) {
-            if (a.getName().equalsIgnoreCase(name)) {
-                return a;
-            }
-        }
-        return null;
+        return activities.stream()
+                .filter(a -> a.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public void createActivity(Activity activity) {
@@ -72,25 +75,6 @@ public class VolunteerService {
     public void deleteActivity(Activity activity) {
         activities.remove(activity);
         saveData();
-    }
-
-    public void enrollVolunteer(String activityName, User user) {
-        Activity activity = getActivityByName(activityName);
-        if (activity == null) {
-            System.out.println("Activity not found.");
-            return;
-        }
-        if (activity.getVolunteers().contains(user)) {
-            System.out.println("Already enrolled.");
-            return;
-        }
-        if (activity.getVolunteers().size() >= activity.getMaxCapacity()) {
-            System.out.println("Activity is full.");
-            return;
-        }
-        activity.getVolunteers().add(user);
-        saveData();
-        System.out.println("Enrolled successfully.");
     }
 
     public void cancelEnrollment(String activityName, User user) {
@@ -123,4 +107,65 @@ public class VolunteerService {
             }
         }
     }
+
+    public User getUserByUsername(String username) {
+        return usersByRole.values().stream()
+                .flatMap(List::stream)
+                .filter(u -> u.getUsername().equalsIgnoreCase(username))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public boolean isUsernameTaken(String username) {
+    return usersByRole.values().stream()
+            .flatMap(List::stream)
+            .anyMatch(u -> u.getUsername().equalsIgnoreCase(username));
+    }
+
+    
+    public void deleteUser(User user) {
+        String roleKey = user.getRole().equalsIgnoreCase("admin") ? "admins" : "volunteers";
+
+        // Eliminar usuario de la lista según su rol
+        List<User> users = usersByRole.get(roleKey);
+        if (users != null && users.remove(user)) {
+            // Quitar al usuario de todas las actividades en que esté inscrito
+            for (Activity activity : activities) {
+                if (activity.getVolunteers().remove(user)) {
+                    System.out.println("Removed user from activity: " + activity.getName());
+                }
+            }
+            saveData();
+            System.out.println("User deleted successfully.");
+        } else {
+            System.out.println("User not found.");
+        }
+    }
+
+    // Método para inscribir voluntario en una actividad (ya tienes, solo lo repaso)
+    public void enrollVolunteer(String activityName, User user) {
+        Activity activity = getActivityByName(activityName);
+        if (activity == null) {
+            System.out.println("Activity not found.");
+            return;
+        }
+        if (activity.getVolunteers().contains(user)) {
+            System.out.println("Already enrolled.");
+            return;
+        }
+        if (activity.getVolunteers().size() >= activity.getMaxCapacity()) {
+            System.out.println("Activity is full.");
+            return;
+        }
+        activity.getVolunteers().add(user);
+        saveData();
+        System.out.println("Enrolled successfully.");
+    }
 }
+
+
+
+
+
+
+

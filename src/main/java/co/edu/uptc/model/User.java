@@ -3,18 +3,58 @@ package co.edu.uptc.model;
 import java.util.Objects;
 
 public class User {
+
+    private String name,lastname;
     private String username;
+    private int age;
+    private String email;
     private String password;
     private String role; // "admin" or "volunteer"
-
-    public User(String username, String password, String role) {
+    
+    public User(String name, String lastname, String username, int age, String email, String password, String role) {
+        this.name = name;
+        this.lastname = lastname;
         this.username = username;
+        this.age = age;
+        this.email = email;
         this.password = password;
         this.role = role.toLowerCase();
+    }
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

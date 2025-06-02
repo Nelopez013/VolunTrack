@@ -68,25 +68,29 @@ public class Main {
 
     private static void register() {
         scanner.nextLine();
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter lastname: ");
+        String lastname = scanner.nextLine();
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
+        System.out.print("Enter age: ");
+        int age = scanner.nextInt();
 
         System.out.print("Are you registering as a volunteer? (yes/no): ");
         String answer = scanner.nextLine().trim().toLowerCase();
 
         if (answer.equals("yes")) {
-            System.out.print("Enter age: ");
-            int age = scanner.nextInt();
             scanner.nextLine();
             System.out.print("Enter email: ");
             String email = scanner.nextLine();
-            Volunteer volunteer = new Volunteer(username, password, age, email);
+            Volunteer volunteer = new Volunteer(name, lastname, username ,age, email,password,"volunteer");
             volunteerService.registerUser(volunteer);
         } else {
             System.out.println("Only the default admin is allowed. You will be registered as a volunteer.");
-            Volunteer volunteer = new Volunteer(username, password, 18, username + "@mail.com");
+            Volunteer volunteer = new Volunteer(name, lastname, username,18, username + "@mail.com",password,"volunteer");
             volunteerService.registerUser(volunteer);
         }
 

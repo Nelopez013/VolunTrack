@@ -8,6 +8,5 @@ module co.edu.uptc {
     opens co.edu.uptc.persistence to com.google.gson;
     opens co.edu.uptc.controller to com.google.gson;
 
-    exports co.edu.uptc;
     exports co.edu.uptc.view;
 }

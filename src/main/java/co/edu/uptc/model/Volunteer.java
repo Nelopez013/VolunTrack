@@ -1,25 +1,23 @@
 package co.edu.uptc.model;
 
 public class Volunteer extends User {
-    private int age;
-    private String email;
 
-    public Volunteer(String username, String password, int age, String email) {
-        super(username, password, "volunteer");
-        this.age = age;
-        this.email = email;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public String getEmail() {
-        return email;
+    public Volunteer(String name, String lastname, String username, int age, String email, String password, String role) {
+        super(name, lastname, username, age, email, password,"volunteer");
+       
     }
 
     @Override
-    public String toString() {
-        return "Volunteer{name='" + getUsername() + "', email='" + email + "', age=" + age + "}";
+        public String toString() {
+            return "Volunteer {" +
+                    "name='" + getName() + '\'' +
+                    ", lastname='" + getLastname() + '\'' +
+                    ", username='" + getUsername() + '\'' +
+                    ", age=" + getAge() +
+                    ", email='" + getEmail() + '\'' +
+                    ", password='" + getPassword() + '\'' +
+                    ", role='" + getRole() + '\'' +
+                    '}';
     }
+    
 }

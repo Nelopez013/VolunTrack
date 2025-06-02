@@ -1,0 +1,18 @@
+[
+  {
+    "location": "e",
+    "name": "e",
+    "description": "e",
+    "date": "Feb 22, 2222, 12:00:00 AM",
+    "maxCapacity": 2,
+    "volunteers": [
+      {
+        "username": "Ded",
+        "password": "123",
+        "role": "volunteer",
+        "age": 23,
+        "email": "de@d"
+      }
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "admin": [
+    {
+      "name": "Freddy",
+      "lastname": "Alarcon",
+      "age": 34,
+      "email": "34@gmail.com",
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin"
+    }
+  ],
+  "volunteer": []
+}
